@@ -62,7 +62,12 @@ src_prepare() {
 	fi
 
 	rm -rf thirdparty/{README,curl,freeglut,freetype,harfbuzz,jbig2dec,libjpeg,mujs,openjpeg,zlib} || die
-	for my_third in thirdparty/* ; do
+
+	local shopt_saved=$(shopt -p nullglob)
+	local thirdparty_paths=(thirdparty/*)
+	${shopt_saved}
+
+	for my_third in ${thirdparty[@]} ; do
 		ewarn "Bundled thirdparty lib: ${my_third}"
 	done
 
