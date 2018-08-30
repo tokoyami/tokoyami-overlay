@@ -116,12 +116,18 @@ src_prepare() {
 
 src_compile() {
 	use lcms && emake XCFLAGS="-fpic" third
+
+	local use_ssl=no
+	if use openssl || use libressl ; then
+		use_ssl=yes
+	fi
+
 	emake XCFLAGS="-fpic" \
 		HAVE_GLUT=$(usex opengl yes no) \
 		HAVE_MUJS=$(usex javascript) \
 		MUJS_LIBS=$(usex javascript -lmujs '') \
 		WANT_CURL=$(usex curl) \
-		WANT_OPENSSL=$(usex openssl) \
+		WANT_OPENSSL=$use_ssl \
 		WANT_X11=$(usex X)
 
 	use static-libs && \
@@ -138,12 +144,17 @@ src_install() {
 		rm docs/man/${PN}.1
 	fi
 
+	local use_ssl=no
+	if use openssl || use libressl ; then
+		use_ssl=yes
+	fi
+
 	emake install \
 		HAVE_GLUT=$(usex opengl yes no) \
 		HAVE_MUJS=$(usex javascript) \
 		MUJS_LIBS=$(usex javascript -lmujs '') \
 		WANT_CURL=$(usex curl) \
-		WANT_OPENSSL=$(usex openssl) \
+		WANT_OPENSSL=$use_ssl \
 		WANT_X11=$(usex X)
 
 	dosym ${my_soname} /usr/$(get_libdir)/lib${PN}.so
