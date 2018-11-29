@@ -29,6 +29,10 @@ RDEPEND="${DEPEND}
 	networkmanager? ( net-misc/networkmanager )
 "
 
+PATCHES=(
+	"${FILESDIR}"/${P}-libressl.patch
+)
+
 QT5_TARGET_SUBDIRS=(
 	src/network
 	src/plugins/bearer/generic
@@ -48,12 +52,6 @@ QT5_GENTOO_PRIVATE_CONFIG=(
 pkg_setup() {
 	use connman && QT5_TARGET_SUBDIRS+=(src/plugins/bearer/connman)
 	use networkmanager && QT5_TARGET_SUBDIRS+=(src/plugins/bearer/networkmanager)
-}
-
-src_prepare() {
-	# From https://bugs.gentoo.org/show_bug.cgi?id=562050#c63.
-	use libressl && epatch "${FILESDIR}/qtnetwork-5.11-libressl-fix.patch"
-	default
 }
 
 src_configure() {
