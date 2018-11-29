@@ -38,15 +38,25 @@ DEPEND="${RDEPEND}
 		dev-python/dbus-python[${PYTHON_USEDEP}]
 	)
 	test? (
-		dev-python/nose[${PYTHON_USEDEP}]
-		x11-base/xorg-server[kdrive]
+		dev-python/pytest[${PYTHON_USEDEP}]
+		dev-python/pytest-cov[${PYTHON_USEDEP}]
+		dev-python/xvfbwrapper[${PYTHON_USEDEP}]
+		x11-base/xorg-server[xephyr]
+		x11-apps/xeyes
+		x11-apps/xcalc
+		x11-apps/xclock
 	)
 "
 
+# display retry backoff slowness and failures
 RESTRICT="test"
 
+PATCHES=( "${FILESDIR}"/${PN}-0.12.0-tests.patch )
+
 python_test() {
-	VIRTUALX_COMMAND="nosetests" virtualmake
+	# force usage of built module
+	rm -rf "${S}"/libqtile || die
+	PYTHONPATH="${BUILD_DIR}/lib" py.test -v "${S}"/test || die "tests failed under ${EPYTHON}"
 }
 
 python_install_all() {
