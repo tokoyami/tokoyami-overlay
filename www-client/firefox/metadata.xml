@@ -41,7 +41,6 @@
 		installation with secure-delete enabled</flag>
 	<flag name="system-webp">Use the system-wide <pkg>media-libs/libwebp</pkg>
 		instead of bundled.</flag>
-
-
+	<flag name="webrtc">Enable WebRTC</flag>
 </use>
 </pkgmetadata>
