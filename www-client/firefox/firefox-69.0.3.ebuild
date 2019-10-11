@@ -38,11 +38,11 @@ if [[ "${PV}" == *_rc* ]]; then
 	MOZ_SRC_URI="${MOZ_HTTP_URI}/source/${PN}-${MOZ_PV}.source.tar.xz -> $P.tar.xz"
 fi
 
-LLVM_MAX_SLOT=8
+LLVM_MAX_SLOT=9
 
 inherit check-reqs eapi7-ver flag-o-matic toolchain-funcs eutils \
 		gnome2-utils llvm mozcoreconf-v6 pax-utils xdg-utils \
-		autotools mozlinguas-v2 virtualx
+		autotools mozlinguas-v2 virtualx multiprocessing
 
 DESCRIPTION="Firefox Web Browser"
 HOMEPAGE="https://www.mozilla.com/firefox"
@@ -70,7 +70,7 @@ CDEPEND="
 	dev-libs/expat
 	>=x11-libs/cairo-1.10[X]
 	>=x11-libs/gtk+-2.18:2
-	>=x11-libs/gtk+-3.4.0:3=[X]
+	>=x11-libs/gtk+-3.4.0:3[X]
 	x11-libs/gdk-pixbuf
 	>=x11-libs/pango-1.22.0
 	>=media-libs/libpng-1.6.35:0=[apng]
@@ -128,6 +128,15 @@ DEPEND="${CDEPEND}
 	sys-apps/findutils
 	|| (
 		(
+			sys-devel/clang:9
+			!clang? ( sys-devel/llvm:9 )
+			clang? (
+				=sys-devel/lld-9*
+				sys-devel/llvm:9[gold]
+				pgo? ( =sys-libs/compiler-rt-sanitizers-9*[profile] )
+			)
+		)
+		(
 			sys-devel/clang:8
 			!clang? ( sys-devel/llvm:8 )
 			clang? (
@@ -156,7 +165,6 @@ DEPEND="${CDEPEND}
 		)
 	)
 	pulseaudio? ( media-sound/pulseaudio )
-	>=virtual/cargo-1.35.0
 	>=virtual/rust-1.35.0
 	wayland? ( >=x11-libs/gtk+-3.11:3[wayland] )
 	amd64? ( >=dev-lang/yasm-1.1 virtual/opengl )
@@ -238,7 +246,7 @@ pkg_setup() {
 
 pkg_pretend() {
 	# Ensure we have enough disk space to compile
-	if use pgo || use debug || use test ; then
+	if use pgo || use lto || use debug || use test ; then
 		CHECKREQS_DISK_BUILD="8G"
 	else
 		CHECKREQS_DISK_BUILD="4G"
@@ -257,9 +265,16 @@ src_unpack() {
 src_prepare() {
 	use !wayland && rm -f "${WORKDIR}/firefox/2019_mozilla-bug1539471.patch"
 	eapply "${WORKDIR}/firefox"
+	eapply "${FILESDIR}/${PN}-69.0-lto-gcc-fix.patch"
 
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
+
+	local n_jobs=$(makeopts_jobs)
+	if [[ ${n_jobs} == 1 ]]; then
+		einfo "Building with MAKEOPTS=-j1 is known to fail (bug #687028); Forcing MAKEOPTS=-j2 ..."
+		export MAKEOPTS=-j2
+	fi
 
 	# Enable gnomebreakpad
 	if use debug ; then
@@ -383,9 +398,6 @@ src_configure() {
 			if [[ $(gcc-major-version) -lt 8 ]] ; then
 				show_old_compiler_warning=1
 			fi
-
-			# Bug 689358
-			append-cxxflags -flto
 
 			if ! use cpu_flags_x86_avx2 ; then
 				local _gcc_version_with_ipa_cdtor_fix="8.3"
@@ -548,12 +560,7 @@ src_configure() {
 
 	mozconfig_annotate '' --enable-extensions="${MEXTENSIONS}"
 
-	if use arm ; then
-		# disable webrtc for now, bug 667642
-		mozconfig_annotate 'broken on arm' --disable-webrtc
-	else
-		mozconfig_use_enable webrtc
-	fi
+	mozconfig_use_enable webrtc
 
 	# allow elfhack to work in combination with unstripped binaries
 	# when they would normally be larger than 2GiB.
