@@ -158,15 +158,6 @@ DEPEND="${CDEPEND}
 				pgo? ( =sys-libs/compiler-rt-sanitizers-7*[profile] )
 			)
 		)
-		(
-			sys-devel/clang:6
-			!clang? ( sys-devel/llvm:6 )
-			clang? (
-				=sys-devel/lld-6*
-				sys-devel/llvm:6[gold]
-				pgo? ( =sys-libs/compiler-rt-sanitizers-6*[profile] )
-			)
-		)
 	)
 	pulseaudio? ( media-sound/pulseaudio )
 	>=virtual/rust-1.36.0
@@ -220,10 +211,6 @@ pkg_setup() {
 		if ! has usersandbox $FEATURES ; then
 			die "You must enable usersandbox as X server can not run as root!"
 		fi
-
-		if ! use clang ; then
-			die "Using GCC and PGO is currently broken!"
-		fi
 	fi
 
 	# Avoid PGO profiling problems due to enviroment leakage
@@ -270,6 +257,8 @@ src_prepare() {
 	use !wayland && rm -f "${WORKDIR}/firefox/2019_mozilla-bug1539471.patch"
 	eapply "${WORKDIR}/firefox"
 	eapply "${FILESDIR}/${PN}-69.0-lto-gcc-fix.patch"
+	eapply "${FILESDIR}/mozilla-bug1601707-gcc-fixup.patch"
+	eapply "${FILESDIR}/${PN}-71.0-bug1602358-fix-older-builds-with-newer-cbindgen.patch"
 
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
