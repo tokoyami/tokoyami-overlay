@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Authors
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI="6"
@@ -6,7 +6,7 @@ VIRTUALX_REQUIRED="pgo"
 WANT_AUTOCONF="2.1"
 MOZ_ESR=""
 
-PYTHON_COMPAT=( python3_{5,6,7} )
+PYTHON_COMPAT=( python3_{6,7,8} )
 PYTHON_REQ_USE='ncurses,sqlite,ssl,threads(+)'
 
 # This list can be updated with scripts/get_langs.sh from the mozilla overlay
@@ -27,7 +27,7 @@ if [[ ${MOZ_ESR} == 1 ]] ; then
 fi
 
 # Patch version
-PATCH="${PN}-71.0-patches-04"
+PATCH="${PN}-73.0-patches-04"
 
 MOZ_HTTP_URI="https://archive.mozilla.org/pub/${PN}/releases"
 MOZ_SRC_URI="${MOZ_HTTP_URI}/${MOZ_PV}/source/firefox-${MOZ_PV}.source.tar.xz"
@@ -54,8 +54,8 @@ LICENSE="MPL-2.0 GPL-2 LGPL-2.1"
 IUSE="bindist clang cpu_flags_x86_avx2 debug eme-free geckodriver
 	+gmp-autoupdate hardened hwaccel jack lto cpu_flags_arm_neon pgo
 	pulseaudio alsa webrtc +screenshot selinux startup-notification +system-av1
-	+system-harfbuzz +system-icu +system-jpeg +system-libevent
-	+system-sqlite +system-libvpx +system-webp test wayland wifi"
+	+system-harfbuzz +system-icu +system-jpeg +system-libevent +system-sqlite
+	+system-libvpx +system-webp test wayland wifi"
 
 REQUIRED_USE="pgo? ( lto )"
 
@@ -68,8 +68,8 @@ SRC_URI="${SRC_URI}
 	${PATCH_URIS[@]}"
 
 CDEPEND="
-	>=dev-libs/nss-3.47.1
-	>=dev-libs/nspr-4.23
+	>=dev-libs/nss-3.49.2
+	>=dev-libs/nspr-4.24
 	dev-libs/atk
 	dev-libs/expat
 	>=x11-libs/cairo-1.10[X]
@@ -102,12 +102,12 @@ CDEPEND="
 		>=media-libs/dav1d-0.3.0:=
 		>=media-libs/libaom-1.0.0:=
 	)
-	system-harfbuzz? ( >=media-libs/harfbuzz-2.5.3:0= >=media-gfx/graphite2-1.3.13 )
+	system-harfbuzz? ( >=media-libs/harfbuzz-2.6.4:0= >=media-gfx/graphite2-1.3.13 )
 	system-icu? ( >=dev-libs/icu-64.1:= )
 	system-jpeg? ( >=media-libs/libjpeg-turbo-1.2.1 )
 	system-libevent? ( >=dev-libs/libevent-2.0:0=[threads] )
 	system-libvpx? ( =media-libs/libvpx-1.7*:0=[postproc] )
-	system-sqlite? ( >=dev-db/sqlite-3.29.0:3[secure-delete,debug=] )
+	system-sqlite? ( >=dev-db/sqlite-3.30.1:3[secure-delete,debug=] )
 	system-webp? ( >=media-libs/libwebp-1.0.2:0= )
 	wifi? (
 		kernel_linux? (
@@ -126,7 +126,7 @@ RDEPEND="${CDEPEND}
 DEPEND="${CDEPEND}
 	app-arch/zip
 	app-arch/unzip
-	>=dev-util/cbindgen-0.9.1
+	>=dev-util/cbindgen-0.12.0
 	>=net-libs/nodejs-8.11.0
 	>=sys-devel/binutils-2.30
 	sys-apps/findutils
@@ -160,7 +160,7 @@ DEPEND="${CDEPEND}
 		)
 	)
 	pulseaudio? ( media-sound/pulseaudio )
-	>=virtual/rust-1.36.0
+	>=virtual/rust-1.39.0
 	wayland? ( >=x11-libs/gtk+-3.11:3[wayland] )
 	amd64? ( >=dev-lang/yasm-1.1 virtual/opengl )
 	x86? ( >=dev-lang/yasm-1.1 virtual/opengl )
@@ -256,9 +256,8 @@ src_unpack() {
 src_prepare() {
 	use !wayland && rm -f "${WORKDIR}/firefox/2019_mozilla-bug1539471.patch"
 	eapply "${WORKDIR}/firefox"
-	eapply "${FILESDIR}/${PN}-69.0-lto-gcc-fix.patch"
-	eapply "${FILESDIR}/mozilla-bug1601707-gcc-fixup.patch"
-	eapply "${FILESDIR}/${PN}-71.0-bug1602358-fix-older-builds-with-newer-cbindgen.patch"
+
+	eapply "${FILESDIR}/${PN}-73.0_fix_lto_pgo_builds.patch"
 
 	# Allow user to apply any additional patches without modifing ebuild
 	eapply_user
@@ -311,6 +310,9 @@ src_prepare() {
 	# Must run autoconf in js/src
 	cd "${S}"/js/src || die
 	eautoconf old-configure.in
+
+	# Clear checksums that present a problem
+	sed -i 's/\("files":{\)[^}]*/\1/' "${S}"/third_party/rust/backtrace-sys/.cargo-checksum.json || die
 }
 
 src_configure() {
