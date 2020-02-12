@@ -1,0 +1,57 @@
+commit 28d5c30005b5342db9ea400e638daad15d110bfe
+Author: Guangwang Huang <whatacold@gmail.com>
+Date:   Sat Feb 1 15:22:36 2020 +0800
+
+    Fix #755: use a valid timestamp for WM_TAKE_FOCUS events.
+
+diff --git a/libqtile/window.py b/libqtile/window.py
+index 39ac3e77..bf00e326 100644
+--- a/libqtile/window.py
++++ b/libqtile/window.py
+@@ -19,10 +19,11 @@
+ # SOFTWARE.
+ import array
+ import contextlib
+ import inspect
+ import traceback
++import time
+ import warnings
+ from xcffib.xproto import EventMask, StackMode, SetMode
+ import xcffib.xproto
+ 
+ from . import utils
+@@ -61,12 +62,12 @@ WindowGroupHint = (1 << 6)
+ MessageHint = (1 << 7)
+ UrgencyHint = (1 << 8)
+ AllHints = (InputHint | StateHint | IconPixmapHint | IconWindowHint |
+             IconPositionHint | IconMaskHint | WindowGroupHint | MessageHint |
+             UrgencyHint)
++
+ WithdrawnState = 0
+-
+ DontCareState = 0
+ NormalState = 1
+ ZoomState = 2
+ IconicState = 3
+ InactiveState = 4
+@@ -547,11 +548,19 @@ class _Window(CommandObject):
+             # Never send TAKE_FOCUS on java *dialogs*
+             if not is_java_dialog and \
+                     "WM_TAKE_FOCUS" in self.window.get_wm_protocols():
+                 data = [
+                     self.qtile.conn.atoms["WM_TAKE_FOCUS"],
+-                    xcffib.xproto.Time.CurrentTime,
++                    # The timestamp here must be a valid timestamp, not CurrentTime.
++                    #
++                    # see https://tronche.com/gui/x/icccm/sec-4.html#s-4.1.7
++                    # > Windows with the atom WM_TAKE_FOCUS in their WM_PROTOCOLS
++                    # > property may receive a ClientMessage event from the
++                    # > window manager (as described in section 4.2.8) with
++                    # > WM_TAKE_FOCUS in its data[0] field and a valid timestamp
++                    # > (i.e. not *CurrentTime* ) in its data[1] field.
++                    int(time.time()),
+                     0,
+                     0,
+                     0
+                 ]
+ 
