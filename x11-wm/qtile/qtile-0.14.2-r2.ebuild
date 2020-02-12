@@ -23,7 +23,7 @@ IUSE="test"
 # docs require sphinxcontrib-blockdiag and sphinxcontrib-seqdiag
 
 RDEPEND="
-	x11-libs/cairo[xcb]
+	x11-libs/cairo[X]
 	x11-libs/pango
 	>=dev-python/setuptools-40.5.0[${PYTHON_USEDEP}]
 	>=dev-python/cairocffi-0.9[${PYTHON_USEDEP}]
