@@ -45,11 +45,6 @@ DEPEND="${RDEPEND}
 # display retry backoff slowness and failures
 RESTRICT="test"
 
-PATCHES=(
-	"${FILESDIR}"/${PN}-0.12.0-tests.patch
-	"${FILESDIR}/fix-lost-focus.diff"
-)
-
 python_test() {
 	# force usage of built module
 	rm -rf "${S}"/libqtile || die
