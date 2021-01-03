@@ -1,4 +1,4 @@
-# Copyright 1999-2020 Gentoo Authors
+# Copyright 1999-2021 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
@@ -6,7 +6,7 @@ EAPI=7
 inherit font
 
 DESCRIPTION="Slender typeface for code, from code"
-HOMEPAGE="https://be5invis.github.io/Iosevka/"
+HOMEPAGE="https://github.com/be5invi/isosevka/"
 SRC_URI="https://github.com/be5invis/${PN}/releases/download/v${PV}/ttf-${PN}-term-slab-${PV}.zip"
 
 LICENSE="OFL-1.1"
