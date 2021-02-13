@@ -4,8 +4,8 @@
 EAPI=7
 PYTHON_COMPAT=( python3_{7,8} )
 
-inherit distutils-r1 virtualx
 DISTUTILS_USE_SETUPTOOLS=rdepend
+inherit distutils-r1 virtualx
 
 if [[ ${PV} == 9999* ]] ; then
 	EGIT_REPO_URI="https://github.com/qtile/qtile.git"
