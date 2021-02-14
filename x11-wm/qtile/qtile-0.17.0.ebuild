@@ -2,7 +2,7 @@
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=7
-PYTHON_COMPAT=( python3_{7,8} )
+PYTHON_COMPAT=( python3_{7,8,9} )
 
 DISTUTILS_USE_SETUPTOOLS=rdepend
 inherit distutils-r1 virtualx
@@ -30,7 +30,7 @@ RDEPEND="
 	>=dev-python/cairocffi-0.9.0[${PYTHON_USEDEP}]
 	>=dev-python/cffi-1.1.0[${PYTHON_USEDEP}]
 	>=dev-python/six-1.4.1[${PYTHON_USEDEP}]
-	>=dev-python/xcffib-0.8.1[${PYTHON_USEDEP}]
+	>=dev-python/xcffib-0.10.1[${PYTHON_USEDEP}]
 "
 BDEPEND="
 	test? (
