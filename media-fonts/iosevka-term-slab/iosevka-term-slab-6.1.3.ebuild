@@ -6,8 +6,8 @@ EAPI=7
 inherit font
 
 DESCRIPTION="Slender typeface for code, from code"
-HOMEPAGE="https://github.com/be5invi/isosevka/"
-SRC_URI="https://github.com/be5invis/${PN}/releases/download/v${PV}/ttf-${PN}-term-slab-${PV}.zip"
+HOMEPAGE="https://github.com/be5invi/iosevka/"
+SRC_URI="https://github.com/be5invis/iosevka/releases/download/v${PV}/ttf-${PN}-${PV}.zip"
 
 LICENSE="OFL-1.1"
 SLOT="0"
