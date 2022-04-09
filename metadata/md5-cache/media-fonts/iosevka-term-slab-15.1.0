@@ -2,13 +2,13 @@ BDEPEND=X? ( >=x11-apps/mkfontscale-1.2.0 media-fonts/encodings )
 DEFINED_PHASES=install postinst postrm setup
 DEPEND=app-arch/unzip
 DESCRIPTION=Slender typeface for code, from code
-EAPI=7
+EAPI=8
 HOMEPAGE=https://github.com/be5invi/iosevka/
 INHERIT=font
 IUSE=X
 KEYWORDS=~amd64 ~arm ~arm64 ~ppc64 ~x86
 LICENSE=OFL-1.1
 SLOT=0
-SRC_URI=https://github.com/be5invis/iosevka/releases/download/v11.2.7/ttf-iosevka-term-slab-11.2.7.zip
-_eclasses_=font	0667878c2b594871023dd1833d05996f
-_md5_=f2a8179b2c111ad84eda098f872616f9
+SRC_URI=https://github.com/be5invis/iosevka/releases/download/v15.1.0/ttf-iosevka-term-slab-15.1.0.zip
+_eclasses_=font	d31f12a0f6e13d56dc3062e76ae58a61
+_md5_=1dc0bcd7926959c1c28c04669c827d8b
