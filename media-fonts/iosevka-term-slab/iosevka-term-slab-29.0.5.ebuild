@@ -11,9 +11,9 @@ SRC_URI="https://github.com/be5invis/Iosevka/releases/download/v${PV}/PkgTTF-Ios
 
 LICENSE="OFL-1.1"
 SLOT="0"
-S=${WORKDIR}
 KEYWORDS="~amd64 ~arm64"
 
 DEPEND="app-arch/unzip"
 
+FONT_S=${WORKDIR}
 FONT_SUFFIX="ttf"
