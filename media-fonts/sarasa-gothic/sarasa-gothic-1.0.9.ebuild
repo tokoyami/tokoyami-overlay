@@ -11,7 +11,6 @@ SRC_URI="https://github.com/be5invis/Sarasa-Gothic/releases/download/v${PV}/Sara
 
 LICENSE="OFL-1.1"
 SLOT="0"
-S=${WORKDIR}
 KEYWORDS="~amd64 ~arm64"
 
 CHECKREQS_DISK_BUILD="800M"
@@ -19,6 +18,7 @@ CHECKREQS_DISK_USR="1500M"
 
 DEPEND="app-arch/unzip"
 
+FONT_S=${WORKDIR}
 FONT_SUFFIX="ttf"
 
 pkg_pretend() {
