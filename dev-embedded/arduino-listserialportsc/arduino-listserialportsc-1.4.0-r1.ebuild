@@ -10,14 +10,13 @@ HOMEPAGE="https://github.com/arduino/listSerialPortsC"
 SRC_URI="https://github.com/arduino/listSerialPortsC/archive/${PV}.tar.gz -> ${P}.tar.gz"
 LICENSE="LGPL-3"
 SLOT="0"
+S="${WORKDIR}/listSerialPortsC-${PV}"
 KEYWORDS="~amd64 ~x86"
 
 RDEPEND=">=dev-libs/libserialport-0.1.1"
 DEPEND="${RDEPEND}
 		virtual/jre
 		"
-
-S="${WORKDIR}/listSerialPortsC-${PV}"
 
 src_compile() {
 	CC=$(tc-getCC)
